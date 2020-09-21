@@ -1,4 +1,4 @@
-package com.example.snapfind.ui.notifications;
+package com.example.snapfind.ui.labels.notifications;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,28 +7,25 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.snapfind.R;
 
 import java.util.ArrayList;
 
-public class NotificationsFragment extends Fragment {
+public class LabelsFragment extends Fragment {
 
-    private NotificationsViewModel notificationsViewModel;
+    private LabelsViewModel labelsViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        notificationsViewModel =
-                ViewModelProviders.of(this).get(NotificationsViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_notifications, container, false);
+        labelsViewModel =
+                ViewModelProviders.of(this).get(LabelsViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_labels, container, false);
 //        final TextView textView = root.findViewById(R.id.text_notifications);
 //        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
 //            @Override
