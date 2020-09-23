@@ -1,4 +1,4 @@
-package com.example.snapfind.ui.labels.notifications;
+package com.example.snapfind.ui.labels;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

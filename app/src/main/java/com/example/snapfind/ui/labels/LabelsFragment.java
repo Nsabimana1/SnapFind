@@ -1,4 +1,4 @@
-package com.example.snapfind.ui.labels.notifications;
+package com.example.snapfind.ui.labels;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -22,4 +22,10 @@
         android:name="com.example.snapfind.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_labels"
+        android:name="com.example.snapfind.ui.labels.LabelsFragment"
+        android:label="@string/title_labels"
+        tools:layout="@layout/fragment_labels" />
 </navigation>
