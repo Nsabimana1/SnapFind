@@ -1,5 +1,6 @@
 package com.example.snapfind.ui.labels;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +17,27 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.example.snapfind.MainActivity;
 import com.example.snapfind.R;
+import com.example.snapfind.StorageHandler.PhotoStorage;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class LabelsFragment extends Fragment {
 
     private LabelsViewModel labelsViewModel;
+    private HashSet<String> labelsList;
+    private ListView listViewForLabels;
+    private Context context;
+
+    private PhotoStorage photoStorage;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        photoStorage = PhotoStorage.getInstance(getParentFragment().getContext());
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -31,53 +46,44 @@ public class LabelsFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_labels, container, false);
         final ImageButton addLabel = root.findViewById(R.id.imageButton_label_adder);
         final TextInputEditText addLabelInputText = root.findViewById(R.id.add_label_input_text);
-//        final TextView textView = root.findViewById(R.id.text_notifications);
-//        notificationsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
 
-        final ListView listViewForLabels = root.findViewById(R.id.listView_for_lables);
-        MainActivity.data.put("SLTC", new ArrayList<String>());
-        MainActivity.data.put("MSN", new ArrayList<String>());
-        MainActivity.data.put("MCR", new ArrayList<String>());
+        listViewForLabels = root.findViewById(R.id.listView_for_lables);
+//        MainActivity.data.put("SLTC", new ArrayList<String>());
+//        MainActivity.data.put("MSN", new ArrayList<String>());
+//        MainActivity.data.put("MCR", new ArrayList<String>());
 
-
-
-        final ArrayList<String> labels = new ArrayList<>();
-//        labels.add("SLTC");
-//        labels.add("MSN");
-//        labels.add("MCR");
-//        labels.add("SLTC");
-//        labels.add("MSN");
-//        labels.add("MCR");
-//        labels.add("SLTC");
-//        labels.add("MSN");
-//        labels.add("MCR");
-//        labels.add("SLTC");
-//        labels.add("MSN");
-//        labels.add("MCR");
-
-        ArrayAdapter listViewAdapter = new ArrayAdapter(getParentFragment().getContext(), android.R.layout.simple_list_item_1, MainActivity.data.keySet().toArray());
-        listViewForLabels.setAdapter(listViewAdapter);
+        photoStorage.addLabel("SLTC");
+        photoStorage.addLabel("MSN");
+        labelsList = new HashSet<>();
+//        photoStorage.loadData();
+        renderListView();
 
         addLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String inputValue = addLabelInputText.getText().toString();
-                MainActivity.data.put(inputValue, new ArrayList<String>());
+                photoStorage.addLabel(inputValue);
+//                MainActivity.data.put(inputValue, new ArrayList<String>());
+                renderListView();
             }
         });
 
         listViewForLabels.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                Toast.makeText(getParentFragment().getContext(),"Clicked Item:" + i + " " + labels.get(i),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getParentFragment().getContext(),"Clicked Item:" + i + " " + labelsList.toArray()[i],Toast.LENGTH_SHORT).show();
             }
         });
         return root;
     }
+
+    public void renderListView(){
+//        labelsList.addAll(MainActivity.data.keySet());
+        labelsList.addAll(photoStorage.getAllLabels());
+        ArrayAdapter listViewAdapter = new ArrayAdapter(getParentFragment().getContext(), android.R.layout.simple_list_item_1, labelsList.toArray());
+        listViewForLabels.setAdapter(listViewAdapter);
+    }
+
+
+
 }

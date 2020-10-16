@@ -33,32 +33,33 @@
             android:id="@+id/imageView_renderer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            tools:src="@tools:sample/backgrounds/scenic" />
+            tools:src="@tools:sample/backgrounds/scenic"
+            android:contentDescription="TODO" />
     </androidx.cardview.widget.CardView>
 
     <ImageButton
         android:id="@+id/imageButtonPrev"
         android:layout_width="77dp"
         android:layout_height="85dp"
-        android:src="@android:drawable/ic_media_next"
+        android:src="@android:drawable/ic_media_previous"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.838"
+        app:layout_constraintHorizontal_bias="0.134"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:layout_constraintVertical_bias="0.173" />
+        app:layout_constraintVertical_bias="0.261" />
 
     <ImageButton
         android:id="@+id/imageButtonNext"
         android:layout_width="86dp"
         android:layout_height="78dp"
-        android:src="@android:drawable/ic_media_previous"
+        android:src="@android:drawable/ic_media_next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.141"
+        app:layout_constraintHorizontal_bias="0.883"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:layout_constraintVertical_bias="0.141" />
+        app:layout_constraintVertical_bias="0.333" />
 
     <ImageButton
         android:id="@+id/imageButton_camera"
@@ -82,6 +83,6 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:layout_constraintVertical_bias="0.22" />
+        app:layout_constraintVertical_bias="0.376" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

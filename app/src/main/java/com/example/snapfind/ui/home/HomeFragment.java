@@ -17,7 +17,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,11 +26,11 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.example.snapfind.MainActivity;
 import com.example.snapfind.R;
+import com.example.snapfind.StorageHandler.PhotoStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -53,10 +52,21 @@ public class HomeFragment extends Fragment {
     public static final int CAMERA_PERM_CODE = 101;
     public static final int CAMERA_REQUEST_CODE = 102;
     public String currentPhotoPath;
-    private String currentVisibleLabel;
+    private String currentLabel;
     private String currentVisibleImagePath;
 
-    public HomeFragment() {
+    private PhotoStorage photoStorage;
+
+//    public HomeFragment() {
+//        dropDownValues = new ArrayList<>();
+////        photoStorage.loadData();
+//    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        photoStorage = PhotoStorage.getInstance(getParentFragment().getContext());
         dropDownValues = new ArrayList<>();
     }
 
@@ -69,15 +79,18 @@ public class HomeFragment extends Fragment {
     }
 
     public void setCurrentVisibleImagePath(){
-        if(!MainActivity.data.isEmpty()){
-            for(String label: MainActivity.data.keySet()){
-                currentVisibleLabel = label;
-                break;
-            }
-            if(MainActivity.data.get(currentVisibleLabel).size() > 0){
-                currentVisibleImagePath = MainActivity.data.get(currentVisibleLabel).get(0);
-            }
+        if(currentLabel != null) {
+            currentVisibleImagePath = photoStorage.getCurrentImagePath(currentLabel);
         }
+//        if(!MainActivity.data.isEmpty()){
+//            for(String label: MainActivity.data.keySet()){
+//                currentVisibleLabel = label;
+//                break;
+//            }
+//            if(MainActivity.data.get(currentVisibleLabel).size() > 0){
+//                currentVisibleImagePath = MainActivity.data.get(currentVisibleLabel).get(0);
+//            }
+//        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -94,15 +107,16 @@ public class HomeFragment extends Fragment {
         imageViewer = root.findViewById(R.id.imageView_renderer);
         addImage = root.findViewById(R.id.imageButton_add_Image);
 
+        photoStorage.loadData();
         refreshSpinner();
         setCurrentVisibleImagePath();
         renderCurrentImage();
-
         addImage.setEnabled(false);
 
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getParentFragment().getContext(), android.R.layout.simple_list_item_1, dropDownValues);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dropDownSpinner.setAdapter(spinnerAdapter);
+
+//        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getParentFragment().getContext(), android.R.layout.simple_list_item_1, dropDownValues);
+//        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        dropDownSpinner.setAdapter(spinnerAdapter);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,8 +129,11 @@ public class HomeFragment extends Fragment {
         addImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.data.get(currentVisibleLabel).add(currentVisibleImagePath);
-                System.out.println("the size of the current images is " + MainActivity.data.get(currentVisibleLabel).size());
+//                MainActivity.data.get(currentVisibleLabel).add(currentVisibleImagePath);
+//                MainActivity.databaseHelper.addNewImage(currentVisibleLabel, currentVisibleImagePath);
+//                System.out.println("the size of the current images is " + MainActivity.data.get(currentVisibleLabel).size());
+
+                photoStorage.addImage(currentLabel, currentVisibleImagePath);
                 addImage.setEnabled(false);
             }
         });
@@ -124,16 +141,22 @@ public class HomeFragment extends Fragment {
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getNextImagePath();
-                renderCurrentImage();
+                if(currentLabel != null) {
+                    currentVisibleImagePath = photoStorage.getNexImagePath(currentLabel);
+//                getNextImagePath();
+                    renderCurrentImage();
+                }
             }
         });
 
         prevButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getPrevImagePath();
-                renderCurrentImage();
+//                getPrevImagePath();
+                if(currentLabel != null) {
+                    currentVisibleImagePath = photoStorage.getPrevImagePath(currentLabel);
+                    renderCurrentImage();
+                }
             }
         });
 
@@ -141,9 +164,12 @@ public class HomeFragment extends Fragment {
         dropDownSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position > 0){
-                    currentVisibleLabel = parent.getSelectedItem().toString();
-                    Toast.makeText(getParentFragment().getContext(), "The selected label is " + currentVisibleLabel, Toast.LENGTH_SHORT).show();
+                if(position >= 0){
+                    currentLabel = parent.getSelectedItem().toString();
+                    Toast.makeText(getParentFragment().getContext(), "The selected label is " + currentLabel, Toast.LENGTH_SHORT).show();
+                    currentVisibleImagePath = photoStorage.getCurrentImagePath(currentLabel);
+                    renderCurrentImage();
+//                    renderFirstImage(currentVisibleLabel);
                 }
             }
             @Override
@@ -155,28 +181,17 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-
-//    private void setStatusFilterListener(){
-//        dropDownSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                if(position > 0){
-//                    currentVisibleLabel = parent.getSelectedItem().toString();
-//                }
-//            }
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//
-//            }
-//        });
-//    }
-
-
+    public void renderFirstImage(String label){
+        if(MainActivity.data.get(label).size() > 0){
+            currentVisibleImagePath = MainActivity.data.get(label).get(0);
+        }
+        renderCurrentImage();
+    }
 
 
     public void getNextImagePath(){
-        if(currentVisibleLabel != null) {
-            ArrayList<String> currentPhotoList = MainActivity.data.get(currentVisibleLabel);
+        if(currentLabel != null) {
+            ArrayList<String> currentPhotoList = MainActivity.data.get(currentLabel);
             if (currentPhotoList.size() > 0) {
                 for (int i = 0; i < currentPhotoList.size(); i++) {
                     if (currentVisibleImagePath.equals(currentPhotoList.get(i))) {
@@ -188,8 +203,8 @@ public class HomeFragment extends Fragment {
     }
 
     public void getPrevImagePath(){
-        if( currentVisibleLabel != null){
-            ArrayList<String> currentPhotoList = MainActivity.data.get(currentVisibleLabel);
+        if( currentLabel != null){
+            ArrayList<String> currentPhotoList = MainActivity.data.get(currentLabel);
             if(currentPhotoList.size() > 0){
                 for (int i = currentPhotoList.size()-1; i >= 0;  i--) {
                     if(currentVisibleImagePath.equals(currentPhotoList.get(i))){
@@ -201,9 +216,15 @@ public class HomeFragment extends Fragment {
     }
 
     public void refreshSpinner(){
-        for(String S: MainActivity.data.keySet()){
-            dropDownValues.add(S);
-        }
+//        for(String S: MainActivity.data.keySet()){
+//            dropDownValues.add(S);
+//        }
+
+        dropDownValues.addAll(photoStorage.getAllLabels());
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getParentFragment().getContext(), android.R.layout.simple_list_item_1, dropDownValues);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dropDownSpinner.setAdapter(spinnerAdapter);
     }
 
     private void askCameraPermission() {
@@ -225,25 +246,28 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == CAMERA_REQUEST_CODE){
 //            Bitmap image = (Bitmap) data.getExtras().get("data");
 //            imageViewer.setImageBitmap(image);
             if(resultCode == Activity.RESULT_OK){
+                /// for add images
+                addImage.setEnabled(true);
+                currentVisibleImagePath = currentPhotoPath;
+
                 File file = new File(currentPhotoPath);
-                imageViewer.setImageURI(Uri.fromFile(file));
+//                imageViewer.setImageURI(Uri.fromFile(file));
+                renderCurrentImage();
 
                 Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                 Uri contentUri = Uri.fromFile(file);
                 mediaScanIntent.setData(contentUri);
                 getActivity().sendBroadcast(mediaScanIntent);
 
-                /// for add images
-                addImage.setEnabled(true);
-                currentVisibleImagePath = currentPhotoPath;
+//                /// for add images
+//                addImage.setEnabled(true);
+//                currentVisibleImagePath = currentPhotoPath;
 
             }
         }
