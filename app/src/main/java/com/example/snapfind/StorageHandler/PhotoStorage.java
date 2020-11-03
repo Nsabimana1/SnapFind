@@ -116,4 +116,7 @@ public class PhotoStorage {
         databaseHelper.addNewImage(label, imagePath);
     }
 
+    public HashMap<String, ArrayList<String>> getPhotoData() {
+        return photoData;
+    }
 }

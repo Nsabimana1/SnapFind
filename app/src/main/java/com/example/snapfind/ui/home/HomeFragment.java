@@ -71,6 +71,8 @@ public class HomeFragment extends Fragment {
     }
 
 
+
+
     public void renderCurrentImage (){
         if(currentVisibleImagePath != null){
             File file = new File(currentVisibleImagePath);
