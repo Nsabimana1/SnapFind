@@ -18,6 +18,10 @@ public class DataCleaner {
     public String objectToSend;
     public ArrayList<ImageInfo> imageInfoList;
     public HashMap<String, ArrayList<String>> allData;
+
+    public String currentImageLabel;
+    public Bitmap currentImageBitMap;
+
     public  DataCleaner(HashMap<String, ArrayList<String>> allData){
         imageInfoList = new ArrayList<>();
         this.allData = allData;
@@ -27,8 +31,12 @@ public class DataCleaner {
     public void extractInformation(){
         for (String label: allData.keySet()){
             for(String imagePath: allData.get(label)){
-                imageInfoList.add(new ImageInfo(label, new File(imagePath)));
+                imageInfoList.add(new ImageInfo(label, imagePath));
+                currentImageLabel = label;
+                currentImageBitMap = createBitmapFromFile(imagePath);
+                break;
             }
+            break;
         }
     }
 
@@ -41,13 +49,42 @@ public class DataCleaner {
         return myBitmap;
     }
 
-    public JSONObject getObject(String label, File file){
+//    from stack overflow
+    public JSONArray output(double[][] input) {
+//        double[] out = new double[input.length * input[0].length];
+        JSONArray jsonArray= new JSONArray();
+        for (int i = 0; i < input.length; i++) {
+            for (int j = 0; j < input[i].length; j++) {
+//                out[i + (j * input.length)] = input[i][j];
+                try {
+                    jsonArray.put( input[i][j]);
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return jsonArray;
+    }
+
+    public JSONObject getObject(String label, double[][] imagePixels2D){
+//        for (int i = 0; i < imagePixels.length; i++) {
+//            for (int j = 0; j < imagePixels[0].length ; j++) {
+//                System.out.println(imagePixels[i][j]);
+//            }
+//        }
+
+//        double[] imagePixels = Stream.of(imagePixels2D)
+//                .flatMap(Stream::of)
+//                .toArray(double[]::new);
+
+        JSONArray imagePixels = output(imagePixels2D);
         JSONObject jsonObject = null;
         try{
             jsonObject = new JSONObject();
             jsonObject.put("id", null);
             jsonObject.put("imageLabel", label);
-            jsonObject.put("imageFile", file);
+//            jsonObject.put("imageFile", file);
+            jsonObject.put("imagePixels", imagePixels);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -57,7 +94,7 @@ public class DataCleaner {
     public JSONArray getObjectToSend() {
         JSONArray jsonArray= new JSONArray();
         for (ImageInfo im: imageInfoList) {
-            jsonArray.put(getObject(im.imageLabel, im.imageFile));
+            jsonArray.put(getObject(im.imageLabel, im.imagePixels2D));
 //            jsonObject.put(im.imageLabel, im.imageFile);
             System.out.println(" the current image is" + im.imageLabel);
         }
@@ -73,6 +110,8 @@ public class DataCleaner {
 //            e.printStackTrace();
 //        }
 //        return null;
+
+//        System.out.println(jsonArray.toString());
         return jsonArray;
     }
 }
