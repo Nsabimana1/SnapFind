@@ -8,16 +8,14 @@
 
     <ListView
         android:id="@+id/listView_for_lables"
-        android:layout_width="413dp"
-        android:layout_height="589dp"
+        android:layout_width="318dp"
+        android:layout_height="456dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.376"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-    </ListView>
+        app:layout_constraintVertical_bias="0.512" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -33,7 +31,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/add_label_input_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="49dp"
             android:hint="Add Label" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -46,5 +44,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textInputLayout"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/button_send_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send All"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.783"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listView_for_lables" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,8 +2,6 @@ package com.example.snapfind.ui.notifications;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -18,25 +16,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.snapfind.R;
 import com.example.snapfind.StorageHandler.PhotoStorage;
+import com.example.snapfind.common.MySingleton;
 import com.example.snapfind.networking.DataCleaner;
 import com.example.snapfind.networking.Utilities;
 
@@ -44,9 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,7 +64,7 @@ public class NotificationsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         context = getParentFragment().getContext();
         photoStorage = PhotoStorage.getInstance(getParentFragment().getContext());
-        dataCleaner = new DataCleaner(photoStorage.getPhotoData());
+//        dataCleaner = new DataCleaner(photoStorage.getPhotoData());
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -112,10 +106,10 @@ public class NotificationsFragment extends Fragment {
             public void onClick(View view) {
                 Toast.makeText(getParentFragment().getContext(),"API is called", Toast.LENGTH_SHORT).show();
 //                postData();
-//                callRestAIP();
+                callRestAIP();
 //                makeCallWithJsonObject();
 //                makeCall();
-                uploadImage(dataCleaner.currentImageLabel, dataCleaner.currentImageBitMap);
+//                uploadImage(dataCleaner.currentImageLabel, dataCleaner.currentImageBitMap);
             }
         });
 
@@ -134,13 +128,17 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void callRestAIP(){
-        String url = "http://10.253.192.101:8080/hi";
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+//        String url = "http://192.168.19.97:8080/hi";
+        String url = "http://" + serverIPAddress+ ":8080/hi";
+//        RequestQueue requestQueue =  Volley.newRequestQueue(context);
+
+        RequestQueue requestQueue = MySingleton.getInstance(context).getRequestQueue();
         StringRequest objectRequest = new StringRequest(Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         // Display the first 500 characters of the response string.
+                        Toast.makeText(getParentFragment().getContext(),"THE RESPONSE IS" + response.toString(), Toast.LENGTH_SHORT).show();
                         Log.d("Recieving from a call", "recevived message is" + response.toString());
                         msgView.setText("Response: " + response.toString());
                     }
@@ -148,11 +146,14 @@ public class NotificationsFragment extends Fragment {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(getParentFragment().getContext(),"THE ERROR IS" + error.toString(), Toast.LENGTH_SHORT).show();
                         Log.e("Request Response", error.toString());
                     }
-
         });
-
+//        objectRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                10000,
+//                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         Toast.makeText(getParentFragment().getContext(),"Listening to end point", Toast.LENGTH_SHORT).show();
         requestQueue.add(objectRequest);
     }
@@ -164,7 +165,7 @@ public class NotificationsFragment extends Fragment {
         try{
             jsonObject = new JSONObject();
             jsonObject.put("imageLabel", "goodMorning");
-            jsonObject.put("imageFile", "D:\\Classes Seneior Year\\Senior Seminar\\Senior Capstone\\ImageClassificationRestAPI\\h");
+            jsonObject.put("filePath", "D:\\Classes Seneior Year\\Senior Seminar\\Senior Capstone\\ImageClassificationRestAPI\\h");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -195,30 +196,13 @@ public class NotificationsFragment extends Fragment {
                             }
                         }
                 };
-
-//        String json = new Gson().toJson(dataCleaner.imageInfoList);
-//        JsonObjectRequest objectRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObject,
-//        new Response.Listener<JSONObject>() {
-//            @Override
-//            public void onResponse(JSONObject response) {
-//                Log.d("Recieving from a call", "recevived message is" + response.toString());
-//                msgView.setText("Response: " + response.toString());
-//            }
-//        },
-//        new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                Log.e("Request Response", error.toString());
-//            }
-//        }
-//        );
         Toast.makeText(getParentFragment().getContext(),"Listening to end point", Toast.LENGTH_SHORT).show();
         requestQueue.add(objectRequest);
     }
 
 
     public void makeCall(){
-        String url = "http://10.253.192.101:8080/hi";
+        String url = "http://192.168.19.97:8080/hi";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
                 (Method.GET, url, null, new Response.Listener<JSONObject>() {
 
@@ -236,7 +220,7 @@ public class NotificationsFragment extends Fragment {
                     }
                 });
 
-// Access the RequestQueue through your singleton class.
+        // Access the RequestQueue through your singleton class.
         Log.d("Making a call", "call was made");
         MySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
